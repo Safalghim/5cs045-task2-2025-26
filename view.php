@@ -13,9 +13,6 @@ $movie = $result->fetch_assoc();
 if (!$movie) {
     exit("Movie not found!");
 }
-
-// Optional image field (if you create one later)
-$image = $movie['image'] ?? 'default.jpg';
 ?>
 <!doctype html>
 <html lang="en">
@@ -33,8 +30,8 @@ $image = $movie['image'] ?? 'default.jpg';
 
     <div class="row">
         <div class="col-md-4">
-            <img src="uploads/<?= htmlspecialchars($image) ?>" class="img-fluid img-thumbnail" alt="Movie Image"
-                 onerror="this.src='https://via.placeholder.com/300x400?text=No+Image';">
+            <!-- Image placeholder; will be updated by JS -->
+            <img id="gameCover" src="https://via.placeholder.com/300x400?text=Loading..." class="img-fluid img-thumbnail" alt="Movie Image">
         </div>
 
         <div class="col-md-8">
@@ -58,6 +55,36 @@ $image = $movie['image'] ?? 'default.jpg';
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const img = document.getElementById('gameCover');
+    const title = encodeURIComponent("<?= addslashes($movie['movie_name']); ?>");
+
+    // 1️⃣ Try OMDb API first (free demo key)
+    fetch(`https://www.omdbapi.com/?t=${title}&apikey=thewdb`)
+    .then(res => res.json())
+    .then(data => {
+        if (data.Poster && data.Poster !== "N/A") {
+            img.src = data.Poster;
+        } else {
+            // 2️⃣ Fallback to Google Books API
+            return fetch(`https://www.googleapis.com/books/v1/volumes?q=intitle:${title}`)
+                .then(res => res.json())
+                .then(bookData => {
+                    if (bookData.items && bookData.items[0]?.volumeInfo?.imageLinks?.thumbnail) {
+                        img.src = bookData.items[0].volumeInfo.imageLinks.thumbnail.replace(/^http:\/\//i, 'https://');
+                    } else {
+                        img.src = 'https://via.placeholder.com/300x400?text=No+Image';
+                    }
+                });
+        }
+    })
+    .catch(() => {
+        img.src = 'https://via.placeholder.com/300x400?text=No+Image';
+    });
+});
+</script>
 
 </body>
 </html>
