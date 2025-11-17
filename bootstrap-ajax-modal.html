@@ -1,0 +1,68 @@
+<?php include 'navigation.html'; ?>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Movies Modal</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+<div class="container mt-4">
+  <h2>Movies (Modal)</h2>
+
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#movieModal">
+    Show Movies
+  </button>
+
+  <!-- Modal -->
+  <div class="modal fade" id="movieModal" tabindex="-1" aria-labelledby="movieModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="movieModalLabel">Movies</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <table class="table table-bordered" id="modalTable">
+            <tr>
+              <th>Movie Name</th>
+			  <th>Movie description</th>
+              <th>Genre</th>
+              <th>Price</th>
+              <th>Date of Release</th>
+            </tr>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+$('#movieModal').on('show.bs.modal', function () {
+    const table = document.getElementById('modalTable');
+    table.innerHTML = '<tr><th>Movie Name</th><th>Movie description</th><th>Genre</th><th>Price</th><th>Date of Release</th></tr><tr><td colspan="4">Loading...</td></tr>';
+
+    fetch('https://mi-linux.wlv.ac.uk/~2406376/ajax.php')
+        .then(res => res.json())
+        .then(data => {
+            table.innerHTML = '<tr><th>Movie Name</th><th>Movie description</th><th>Genre</th><th>Price</th><th>Date of Release</th></tr>';
+            data.forEach(movie => {
+                const row = table.insertRow();
+                row.insertCell(0).textContent = movie.movie_name;
+				row.insertCell(1).textContent = movie.movie_description;
+                row.insertCell(2).textContent = movie.genre;
+                row.insertCell(3).textContent = movie.price;
+                row.insertCell(4).textContent = movie.date_of_release;
+            });
+        });
+});
+</script>
+</body>
+</html>

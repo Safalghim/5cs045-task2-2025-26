@@ -1,0 +1,51 @@
+<?php include 'navigation.html'; ?>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Movies Dropdown</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+<div class="container mt-4">
+  <h2>Movies (Dropdown)</h2>
+
+  <div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+      Select Movie
+    </button>
+    <ul class="dropdown-menu" id="movieDropdown"></ul>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const dropdownEl = document.querySelector('.dropdown');
+
+dropdownEl.addEventListener('show.bs.dropdown', () => {
+    const list = document.getElementById('movieDropdown');
+    list.innerHTML = '<li class="px-3 py-2">Loading...</li>';
+
+    fetch('https://mi-linux.wlv.ac.uk/~2406376/ajax.php')
+        .then(res => res.json())
+        .then(data => {
+            list.innerHTML = '';
+            data.forEach(movie => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.className = 'dropdown-item';
+
+                // ⭐ Corrected link (this was causing the error)
+                a.href = 'view.php?id=' + movie.movie_id;
+
+                a.textContent = `${movie.movie_name} - ${movie.movie_description} - ${movie.genre} (£${movie.price})`;
+                li.appendChild(a);
+                list.appendChild(li);
+            });
+        });
+});
+
+</script>
+</body>
+</html>
